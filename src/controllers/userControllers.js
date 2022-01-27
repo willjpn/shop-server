@@ -194,28 +194,41 @@ export const fetchUserByAccessToken = async (req, res, next) => {
 }
 
 export const changePassword = async (req, res, next) => {
-    try {
-        const {currentPassword, newPassword, newPassword2} = req.body
 
-        const user = req.user
-        if (!user) {
-            return next(new Error("No user was found"))
-        }
+    try {
+        const {originalPassword, newPassword, repeatPassword} = req.body
+        console.log(originalPassword, newPassword, repeatPassword)
+
+
+        // even though we have req.user, need to find user again as req.user doesn't have password
+        const user = await User.findOne({_id: req.user._id})
+
+
         // check if current password is correct
-        const valid = await user.validatePassword(currentPassword)
-        if (!valid) {
-            return next(new Error("Current password entered was incorrect"))
+        const match = await user.validatePassword(originalPassword)
+
+        if (!match) {
+            return next(new CustomError("The current password entered in incorrect", 400))
         }
-        // check if newPassword and newPassword2 are the same
-        if (newPassword !== newPassword2) {
-            return next(new Error("The new passwords entered are not the same"))
+
+        // check if newPassword and resetPassword are the same
+        if (newPassword !== repeatPassword) {
+            return next(new CustomError("The passwords entered are not the same", 400))
         }
-        // if they are the same, hash password and save
+
+        if (newPassword === originalPassword) {
+            return next(new CustomError("Please make sure you choose a password you've not used before", 400))
+        }
+
         user.password = newPassword
+
+        // password gets hashed pre-save
         await user.save()
+
         res.json({
             message: "Successfully saved new password"
         })
+
     } catch (err) {
         next(err)
     }
