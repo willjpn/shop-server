@@ -5,33 +5,38 @@ import {
     getUsers,
     updateUser,
     deleteUser,
-    getUser, fetchUserByAccessToken, changePassword, editShippingDetails, getUserInformation
+    fetchUserByAccessToken,
+    changePassword,
+    editShippingDetails,
+    getUserInformation,
+    getEditUser
 } from "../controllers/userControllers.js";
-import jwt from "jsonwebtoken"
-import User from "../models/User.js"
-import {validateAccessToken} from "../middleware/authMiddleware.js";
+import {isAdmin, validateAccessToken} from "../middleware/authMiddleware.js";
 
 const router = express.Router()
 
 // TODO - add userAdmin and mainAdmin middleware
 
 // create a user
-router.post("/", registerUser)
+router.post("/", validateAccessToken, isAdmin, registerUser)
 
 // get all users
-router.get("/", getUsers)
+router.get("/", validateAccessToken, isAdmin, getUsers)
 
 // get user information
 router.get("/get-user", validateAccessToken, getUserInformation)
 
-// get a user
-router.get("/:id", getUser)
+// get user information for edit user screen
+router.get('/get-edit-user/:id', validateAccessToken, isAdmin, getEditUser)
+
+// // get a user
+// router.get("/:id", getUser)
 
 // update a user
 router.put("/:id", updateUser)
 
 // delete a user
-router.delete("/:id", deleteUser)
+router.delete("/:id", validateAccessToken, isAdmin, deleteUser)
 
 // login a user
 router.post("/login", validateUser)

@@ -1,35 +1,6 @@
 import jwt from "jsonwebtoken"
 import User from "../models/User.js"
 import {CustomError} from "../../utils/errorHandler.js";
-import e from "express";
-
-
-export const protect = async (req, res, next) => {
-    try {
-        let bearerToken = req.headers.authorization
-
-        if (bearerToken && bearerToken.startsWith("Bearer")) {
-
-            const accessToken = bearerToken.split(" ")[1]
-            if (!accessToken) {
-                res.status(401)
-                return next(new Error("No valid token prov"))
-            }
-            jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, id) => {
-                if (err) {
-                    res.status(403)
-                    return next(new Error("Sorry, but you are not authorized to access this route."))
-                } else {
-                    req.user = await User.findOne({_id: id}).select("-password")
-                    res.status(200)
-                }
-            })
-        }
-        next()
-    } catch (err) {
-        next(err)
-    }
-}
 
 export const validateAccessToken = async (req, res, next) => {
     try {
@@ -65,4 +36,12 @@ export const validateAccessToken = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
+}
+
+export const isAdmin = async (req, res, next) => {
+    const user = req.user
+    if (!user.isAdmin) {
+        return next(new CustomError("You don't have permission to do this", 403))
+    }
+    next()
 }

@@ -6,30 +6,30 @@ import jwt from "jsonwebtoken";
 import {CustomError} from "../../utils/errorHandler.js";
 
 export const registerUser = async (req, res, next) => {
-    const payload = req.body
     try {
+        const payload = req.body
+
         const user = await User.findOne({email: payload.email})
+
         if (user) {
-            res.status(400)
-            return next(new Error("A user with this email already exists."))
+            return next(new CustomError("A user with this email already exists. Please use a different email.", 500))
         }
-        // const hash = await bcrypt.hash(payload.password, 12)
+
+        const hash = await bcrypt.hash(payload.password, 12)
+
         const newUser = new User(payload)
-        // newUser.password = hash
+
+        newUser.password = hash
+
         await newUser.save()
 
-        if (newUser) {
-            res.status(201)
-            res.json({
-                _id: newUser._id,
-                firstName: newUser.firstName,
-                lastName: newUser.lastName,
-                email: newUser.email,
-                isAdmin: newUser.isAdmin,
-            })
-        } else {
-            return next(new Error("An error has occurred when creating a new account."))
-        }
+        res.json({
+            _id: newUser._id,
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            email: newUser.email,
+            isAdmin: newUser.isAdmin,
+        })
 
     } catch (err) {
         next(err)
@@ -38,7 +38,8 @@ export const registerUser = async (req, res, next) => {
 
 export const getUsers = async (req, res) => {
     try {
-        const users = await User.find()
+        const users = await User.find().select('-password')
+        console.log("users", users)
         res.json(users)
     } catch (err) {
         res.json({
@@ -47,25 +48,30 @@ export const getUsers = async (req, res) => {
     }
 }
 
-export const updateUser = async (req, res) => {
+export const updateUser = async (req, res, next) => {
     const id = req.params.id
+    const payload = req.body
+
     try {
+
         const user = await User.findOne({_id: id})
-        if (user) {
-            user.firstName = `Edited ${user.firstName}`
-            await user.save()
-            res.json({
-                message: "Successfully updated user information."
-            })
-        } else {
-            res.json({
-                message: "Unable to update user information."
-            })
+
+        if (!user) {
+            return next(new CustomError("User with specified id not found", 404))
         }
-    } catch (err) {
+
+        user.firstName = payload.firstName
+        user.lastName = payload.lastName
+        user.isAdmin = payload.isAdmin
+
+        await user.save()
+
         res.json({
-            message: err
+            success: true
         })
+
+    } catch (err) {
+        next(err)
     }
 }
 
@@ -85,6 +91,7 @@ export const deleteUser = async (req, res) => {
 
 
 export const validateUser = async (req, res, next) => {
+    console.log("login endpoint running")
     const {email, password} = req.body
     try {
         const user = await User.findOne({email: email})
@@ -156,9 +163,23 @@ export const getUser = async (req, res, next) => {
     }
 }
 
-export const getUserInformation = async (req, res, next) => {
+export const getUserInformation = async (req, res) => {
     console.log("successfully fetched user information")
     res.json(req.user)
+}
+
+export const getEditUser = async (req, res, next) => {
+    const id = req.params.id
+    console.log("getEditUser endpoint reached")
+    try {
+        const user = await User.findOne({_id: id}).select("-password")
+        if (!user) {
+            return next(new CustomError("Incorrect email or password", 409))
+        }
+        res.json(user)
+    } catch (err) {
+        next(err)
+    }
 }
 
 export const fetchUserByAccessToken = async (req, res, next) => {

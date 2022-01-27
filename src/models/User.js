@@ -26,23 +26,18 @@ const UserSchema = new mongoose.Schema({
     shippingDetails: {
         address: {
             type: String,
-            required: true
         },
         city: {
             type: String,
-            required: true
         },
         postCode: {
             type: String,
-            required: true
         },
         county: {
             type: String,
-            required: true
         },
         country: {
             type: String,
-            required: true
         },
     }
 })

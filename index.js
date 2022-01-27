@@ -9,6 +9,8 @@ import cookieParser from "cookie-parser"
 
 dotenv.config()
 
+// TODO - NEED TO ADD ISADMIN MIDDLEWARE - CRUCIAL!!!!!!
+
 // TODO - write backend in both typescript and go
 const app = express()
 
