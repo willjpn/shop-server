@@ -45,7 +45,7 @@ router.post("/login", validateUser)
 router.post("/change-password", validateAccessToken, changePassword)
 
 // add/change shipping address for specific user
-router.post("/add-shipping-address", validateAccessToken, editShippingDetails)
+router.post("/shipping-address", validateAccessToken, editShippingDetails)
 
 // get user using access token
 router.get("/authenticate/:accessToken", fetchUserByAccessToken)

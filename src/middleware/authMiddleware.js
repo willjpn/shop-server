@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken"
 import User from "../models/User.js"
 import {CustomError} from "../../utils/errorHandler.js";
 
+
+
 export const validateAccessToken = async (req, res, next) => {
     try {
         const bearer = req.headers.authorization
