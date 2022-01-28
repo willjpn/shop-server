@@ -1,5 +1,12 @@
 import express from "express"
-import {createProduct, getProducts, updateProduct, getProduct, deleteProduct} from "../controllers/productController.js";
+import {
+    createProduct,
+    getProducts,
+    updateProduct,
+    getProduct,
+    deleteProduct,
+    queryProducts
+} from "../controllers/productController.js";
 import {upload} from "../middleware/productMiddleware.js";
 import {isAdmin, validateAccessToken} from "../middleware/authMiddleware.js";
 
@@ -10,6 +17,9 @@ router.post("/", upload.single("image"), validateAccessToken, isAdmin, createPro
 
 // get all products
 router.get("/", getProducts)
+
+// get products based on query
+router.post("/query", queryProducts)
 
 // get a product
 router.get("/:id", getProduct)

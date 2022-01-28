@@ -88,3 +88,25 @@ export const deleteProduct = async (req, res, next) => {
         next(err)
     }
 }
+
+export const queryProducts = async (req, res, next) => {
+    let query = req.body.query.toLowerCase().trim()
+    let pageNumber = req.body.pageNumber || 1
+
+    try {
+
+        const products = await Product.find({
+            name: {
+                $regex: query,
+                $options: 'i'
+            }
+        }).sort({'name': 'asc'}).skip(10 * (pageNumber - 1)).limit(10)
+
+        const count = await Product.countDocuments({name: {$regex: query, $options: 'i'}})
+
+        res.json({products, count})
+
+    } catch (err) {
+        next(err)
+    }
+}
