@@ -12,14 +12,12 @@ export const registerUser = async (req, res, next) => {
         const user = await User.findOne({email: payload.email})
 
         if (user) {
-            return next(new CustomError("A user with this email already exists. Please use a different email.", 500))
+            return next(new CustomError("A user with this email already exists. Please use a different email.", 400))
         }
 
-        const hash = await bcrypt.hash(payload.password, 12)
+        // password hashing gets done pre-save
 
         const newUser = new User(payload)
-
-        newUser.password = hash
 
         await newUser.save()
 
@@ -39,7 +37,6 @@ export const registerUser = async (req, res, next) => {
 export const getUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password')
-        console.log("users", users)
         res.json(users)
     } catch (err) {
         res.json({
@@ -91,7 +88,6 @@ export const deleteUser = async (req, res) => {
 
 
 export const validateUser = async (req, res, next) => {
-    console.log("login endpoint running")
     const {email, password} = req.body
     try {
         const user = await User.findOne({email: email})
@@ -164,13 +160,11 @@ export const getUser = async (req, res, next) => {
 }
 
 export const getUserInformation = async (req, res) => {
-    console.log("successfully fetched user information")
     res.json(req.user)
 }
 
 export const getEditUser = async (req, res, next) => {
     const id = req.params.id
-    console.log("getEditUser endpoint reached")
     try {
         const user = await User.findOne({_id: id}).select("-password")
         if (!user) {
@@ -197,8 +191,6 @@ export const changePassword = async (req, res, next) => {
 
     try {
         const {originalPassword, newPassword, repeatPassword} = req.body
-        console.log(originalPassword, newPassword, repeatPassword)
-
 
         // even though we have req.user, need to find user again as req.user doesn't have password
         const user = await User.findOne({_id: req.user._id})

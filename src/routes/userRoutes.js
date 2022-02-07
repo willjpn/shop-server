@@ -18,7 +18,7 @@ const router = express.Router()
 // TODO - add userAdmin and mainAdmin middleware
 
 // create a user
-router.post("/", validateAccessToken, isAdmin, registerUser)
+router.post("/", registerUser)
 
 // get all users
 router.get("/", validateAccessToken, isAdmin, getUsers)

@@ -6,10 +6,14 @@ import productRoutes from "./src/routes/productRoutes.js";
 import {connectToDatabase} from "./src/db.js";
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
+import orderRoutes from "./src/routes/orderRoutes.js";
+
 
 dotenv.config()
 
 // TODO - NEED TO ADD ISADMIN MIDDLEWARE - CRUCIAL!!!!!!
+
+// TODO - look at stripe-sample-code project to see proxy setup
 
 // TODO - write backend in both typescript and go
 const app = express()
@@ -32,6 +36,11 @@ connectToDatabase()
 app.use("/user", userRoutes)
 app.use("/admin", adminRoutes)
 app.use("/product", productRoutes)
+app.use("/order", orderRoutes)
+
+app.get('/paypal', (req, res) => {
+    res.send(process.env.PAYPAL_ID)
+})
 
 app.use((req, res, next) => {
     const error = new Error(`Invalid endpoint: ${req.originalUrl}`)
