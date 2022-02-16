@@ -200,16 +200,16 @@ export const changePassword = async (req, res, next) => {
         const match = await user.validatePassword(originalPassword)
 
         if (!match) {
-            return next(new CustomError("The current password entered in incorrect", 400))
+            return next(new CustomError("The current password entered is incorrect.", 400))
         }
 
         // check if newPassword and resetPassword are the same
         if (newPassword !== repeatPassword) {
-            return next(new CustomError("The passwords entered are not the same", 400))
+            return next(new CustomError("The passwords entered are not the same.", 400))
         }
 
         if (newPassword === originalPassword) {
-            return next(new CustomError("Please make sure you choose a password you've not used before", 400))
+            return next(new CustomError("Please make sure you choose a password you've not used before.", 400))
         }
 
         user.password = newPassword
@@ -230,6 +230,26 @@ export const editShippingDetails = async (req, res, next) => {
     try {
         const user = req.user
         await user.addShippingDetails(req.body)
+        res.json({
+            message: "success"
+        })
+    } catch (err) {
+        next(err)
+    }
+}
+
+
+export const editUserDetails = async (req, res, next) => {
+    try {
+        const user = req.user
+        const payload = req.body
+
+        user.firstName = payload.firstName
+        user.lastName = payload.lastName
+        user.email = payload.email
+
+        await user.save()
+
         res.json({
             message: "success"
         })

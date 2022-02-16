@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import dayjs from "dayjs";
 
 const OrderSchema = new mongoose.Schema({
     user: {
@@ -41,8 +42,14 @@ const OrderSchema = new mongoose.Schema({
     },
     deliveredDate: {
         type: Date
+    },
+    createdOn: {
+        type: String,
+        default: dayjs(new Date()).format('HH:mm [on] DD/MM/YYYY')
     }
-})
+
+
+}, {timestamps: true})
 
 const Order = mongoose.model("Order", OrderSchema)
 

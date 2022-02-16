@@ -4,17 +4,23 @@ import Product from "../models/Product.js";
 
 export const createProduct = async (req, res, next) => {
     try {
-
+        console.log(req.body)
         const fileName = `uploads/${v4()}.png`
         // TODO - add sharp to resize images
         if (req.file) {
+            // await sharp(req.file.path).png().resize({
+            //     // width: 384,
+            //     // height: 225,
+            //     height: 200,
+            //     fit: 'contain',
+            //     background: {r: 0, g: 0, b: 0, alpha: 0}
+            // }).toFile(fileName)
             await sharp(req.file.path).png().resize({
-                // width: 384,
-                // height: 225,
-                height: 200,
+                width: 384,
+                height: 225,
                 fit: 'contain',
                 background: {r: 0, g: 0, b: 0, alpha: 0}
-            }).toFile(fileName)
+            }).toFile(fileName);
         }
 
         const payload = req.body
@@ -102,9 +108,11 @@ export const queryProducts = async (req, res, next) => {
             }
         }).sort({'name': 'asc'}).skip(10 * (pageNumber - 1)).limit(10)
 
-        const count = await Product.countDocuments({name: {$regex: query, $options: 'i'}})
 
-        res.json({products, count})
+        const count = await Product.countDocuments({name: {$regex: query, $options: 'i'}})
+        const totalCount = await Product.countDocuments()
+
+        res.json({products, count, totalCount})
 
     } catch (err) {
         next(err)

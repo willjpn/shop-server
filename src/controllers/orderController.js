@@ -19,6 +19,14 @@ export const createOrder = async (req, res, next) => {
     try {
         payload.user = user._id
 
+        const count = await Order.countDocuments({isPaid: false, user: req.user._id})
+
+        console.log("count", count)
+
+        if (count >= 5) {
+            return next(new CustomError("You can not have more than five outstanding orders at any one time.", 500))
+        }
+
         const order = new Order(payload)
 
         await order.save()
@@ -34,6 +42,25 @@ export const editOrder = async (req, res, next) => {
     const id = req.params.id
     try {
 
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const getUserOrders = async (req, res, next) => {
+    console.log("endpoint reached")
+    try {
+        const user = req.user
+        console.log("user", user)
+        const orders = await Order.find({user: user._id})
+
+        console.log("orders, orders", orders)
+
+        if (!orders) {
+            return next(new CustomError("Unable to find orders with the id provided.", 404))
+        }
+
+        res.json(orders)
     } catch (err) {
         next(err)
     }

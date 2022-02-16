@@ -5,7 +5,7 @@ import {
     deleteOrder,
     editOrder,
     getAdminOrders,
-    getOrder,
+    getOrder, getUserOrders,
     payOrder
 } from "../controllers/orderController.js";
 
@@ -18,6 +18,8 @@ router.get('/', validateAccessToken, isAdmin, getAdminOrders)
 router.post('/', validateAccessToken, createOrder)
 
 router.post('/:id/pay', validateAccessToken, payOrder)
+
+router.get('/user-orders', validateAccessToken, getUserOrders)
 
 router.put('/:id', validateAccessToken, editOrder)
 

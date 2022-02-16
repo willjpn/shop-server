@@ -9,7 +9,7 @@ import {
     changePassword,
     editShippingDetails,
     getUserInformation,
-    getEditUser
+    getEditUser, editUserDetails
 } from "../controllers/userControllers.js";
 import {isAdmin, validateAccessToken} from "../middleware/authMiddleware.js";
 
@@ -46,6 +46,9 @@ router.post("/change-password", validateAccessToken, changePassword)
 
 // add/change shipping address for specific user
 router.post("/shipping-address", validateAccessToken, editShippingDetails)
+
+// edit user details
+router.post("/details", validateAccessToken, editUserDetails)
 
 // get user using access token
 router.get("/authenticate/:accessToken", fetchUserByAccessToken)
