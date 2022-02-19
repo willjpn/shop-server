@@ -9,7 +9,7 @@ import {
     changePassword,
     editShippingDetails,
     getUserInformation,
-    getEditUser, editUserDetails
+    getEditUser, editUserDetails, addCheckoutAddress
 } from "../controllers/userControllers.js";
 import {isAdmin, validateAccessToken} from "../middleware/authMiddleware.js";
 
@@ -52,5 +52,8 @@ router.post("/details", validateAccessToken, editUserDetails)
 
 // get user using access token
 router.get("/authenticate/:accessToken", fetchUserByAccessToken)
+
+// add temporary checkout shipping address for user
+router.post("/checkout-address", validateAccessToken, addCheckoutAddress)
 
 export default router

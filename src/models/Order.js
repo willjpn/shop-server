@@ -29,6 +29,14 @@ const OrderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    exVat: {
+        type: Number,
+        required: true
+    },
+    vat: {
+        type: Number,
+        required: true
+    },
     isPaid: {
         type: Boolean,
         default: false,

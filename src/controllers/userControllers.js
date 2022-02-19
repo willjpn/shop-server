@@ -257,3 +257,26 @@ export const editUserDetails = async (req, res, next) => {
         next(err)
     }
 }
+
+export const addCheckoutAddress = async (req, res, next) => {
+    try {
+        const address = req.body
+        const user = req.user
+
+        if (!address.postCode) {
+            return next(new CustomError("Address not provided.", 400))
+        }
+
+        user.checkoutAddress = address
+
+
+        await user.save()
+
+        res.json({
+            message: "success"
+        })
+    } catch (err) {
+        next(err)
+    }
+
+}

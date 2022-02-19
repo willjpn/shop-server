@@ -4,7 +4,6 @@ import Product from "../models/Product.js";
 
 export const createProduct = async (req, res, next) => {
     try {
-        console.log(req.body)
         const fileName = `uploads/${v4()}.png`
         // TODO - add sharp to resize images
         if (req.file) {

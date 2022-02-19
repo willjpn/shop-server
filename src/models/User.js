@@ -39,6 +39,23 @@ const UserSchema = new mongoose.Schema({
         country: {
             type: String,
         },
+    },
+    checkoutAddress: {
+        address: {
+            type: String,
+        },
+        city: {
+            type: String,
+        },
+        postCode: {
+            type: String,
+        },
+        county: {
+            type: String,
+        },
+        country: {
+            type: String,
+        },
     }
 })
 
