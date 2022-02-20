@@ -25,7 +25,7 @@ export const createProduct = async (req, res, next) => {
         const payload = req.body
 
         // TODO - this can't be the correct way of doing this
-        payload.image = `http://localhost:8000/${fileName}`
+        payload.image = `https://will-shop.herokuapp.com/${fileName}`
 
         const product = new Product(payload)
         await product.save()

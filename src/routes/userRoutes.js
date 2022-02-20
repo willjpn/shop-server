@@ -33,6 +33,7 @@ router.get('/get-edit-user/:id', validateAccessToken, isAdmin, getEditUser)
 // router.get("/:id", getUser)
 
 // update a user
+// TODO - this should have middleware!!
 router.put("/:id", updateUser)
 
 // delete a user
