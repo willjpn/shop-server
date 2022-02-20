@@ -33,7 +33,6 @@ export const getNewAccessToken = async (req, res, next) => {
             return next(new CustomError("Unable to user with specified id", 400))
         }
 
-        console.log("successfully fetched new access token")
 
         res.json({
             accessToken: accessToken,

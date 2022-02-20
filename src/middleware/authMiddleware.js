@@ -6,8 +6,6 @@ export const validateAccessToken = async (req, res, next) => {
     try {
         const bearer = req.headers.authorization
 
-        console.log("bearer", bearer)
-
         if (!bearer) {
             return next(new CustomError("No bearer token provided", 401))
         }

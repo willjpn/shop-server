@@ -39,7 +39,6 @@ app.use("/product", productRoutes)
 app.use("/order", orderRoutes)
 
 app.get('/paypal', (req, res) => {
-    console.log(process.env.PAYPAL_ID)
     const id = process.env.PAYPAL_ID
     res.json(id)
 })

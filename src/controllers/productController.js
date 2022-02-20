@@ -96,7 +96,8 @@ export const deleteProduct = async (req, res, next) => {
 
 export const queryProducts = async (req, res, next) => {
     let query = req.body.query.toLowerCase().trim()
-    let pageNumber = req.body.pageNumber || 1
+    let pageNumber = req.body.page || 1
+
 
     try {
 

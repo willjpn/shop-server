@@ -1,5 +1,6 @@
 import Order from "../models/Order.js";
 import {CustomError} from "../../utils/errorHandler.js";
+import User from "../models/User.js";
 
 export const getAdminOrders = async (req, res, next) => {
     try {
@@ -28,6 +29,11 @@ export const createOrder = async (req, res, next) => {
         const order = new Order(payload)
 
         await order.save()
+
+        // once the order has been paid for, remove the temporary address so the user has to reconfirm the shipping address for their order
+        const orderUser = await User.findOne({_id: user._id})
+        orderUser.checkoutAddress = {}
+        await orderUser.save()
 
         res.json(order)
     } catch (err) {
