@@ -31,7 +31,8 @@ app.use(cookieParser())
 
 app.use("/uploads", express.static('uploads'));
 
-connectToDatabase()
+await connectToDatabase()
+
 
 app.use("/user", userRoutes)
 app.use("/admin", adminRoutes)
@@ -41,6 +42,10 @@ app.use("/order", orderRoutes)
 app.get('/paypal', (req, res) => {
     const id = process.env.PAYPAL_ID
     res.json(id)
+})
+
+app.get("/test", (req, res) => {
+    res.send("test endpoint")
 })
 
 app.use((req, res, next) => {
