@@ -7,10 +7,10 @@ import {connectToDatabase} from "./src/db.js";
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 import orderRoutes from "./src/routes/orderRoutes.js";
-import helmet from "helmet";
-
 
 dotenv.config()
+
+// TODO - check password supplied when logging in is not empty
 
 // TODO - NEED TO ADD ISADMIN MIDDLEWARE - CRUCIAL!!!!!!
 
@@ -29,7 +29,8 @@ app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
 
 app.use(express.json())
 app.use(cookieParser())
-app.use(helmet())
+
+app.set('trust proxy', 1)
 
 app.use("/uploads", express.static('uploads'));
 
