@@ -5,15 +5,7 @@ import Product from "../models/Product.js";
 export const createProduct = async (req, res, next) => {
     try {
         const fileName = `uploads/${v4()}.png`
-        // TODO - add sharp to resize images
         if (req.file) {
-            // await sharp(req.file.path).png().resize({
-            //     // width: 384,
-            //     // height: 225,
-            //     height: 200,
-            //     fit: 'contain',
-            //     background: {r: 0, g: 0, b: 0, alpha: 0}
-            // }).toFile(fileName)
             await sharp(req.file.path).png().resize({
                 width: 384,
                 height: 225,
@@ -24,7 +16,6 @@ export const createProduct = async (req, res, next) => {
 
         const payload = req.body
 
-        // TODO - this can't be the correct way of doing this
         payload.image = `https://will-webshop.herokuapp.com/${fileName}`
 
         const product = new Product(payload)
@@ -84,7 +75,6 @@ export const updateProduct = async (req, res, next) => {
 export const deleteProduct = async (req, res, next) => {
     const id = req.params.id
     try {
-        // TODO - remove image from uploads folder
         await Product.findOneAndDelete({_id: id})
         res.json({
             message: "Successfully deleted product."

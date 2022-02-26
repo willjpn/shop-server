@@ -12,7 +12,6 @@ dotenv.config()
 
 // TODO - check password supplied when logging in is not empty
 
-// TODO - NEED TO ADD ISADMIN MIDDLEWARE - CRUCIAL!!!!!!
 
 // TODO - look at stripe-sample-code project to see proxy setup
 
@@ -21,7 +20,6 @@ const app = express()
 
 // TODO - research OWASP and check for string on password as they could inject an object which is simply code
 
-// TODO - single page apps ie react aren't good for seo
 // TODO - if product removed from product list, needs to be removed from basket and anywhere else
 
 // TODO - set up proxy

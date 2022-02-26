@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
 
 
-//TODO - add inStock login to backend and frontend
 const ProductSchema = new mongoose.Schema({
     name: {
         type: String,

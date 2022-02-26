@@ -106,10 +106,14 @@ export const validateUser = async (req, res, next) => {
                 }
                 res.cookie("refreshToken", refreshToken, {
                     httpOnly: true,
+                    secure: 'false',
+                    sameSite: 'none'
                 });
 
                 res.cookie("li", true, {
-                    httpOnly: false
+                    httpOnly: false,
+                    secure: 'false',
+                    sameSite: 'none'
                 })
 
                 const userInfo = {

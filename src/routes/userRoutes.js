@@ -15,8 +15,6 @@ import {isAdmin, validateAccessToken} from "../middleware/authMiddleware.js";
 
 const router = express.Router()
 
-// TODO - add userAdmin and mainAdmin middleware
-
 // create a user
 router.post("/", registerUser)
 

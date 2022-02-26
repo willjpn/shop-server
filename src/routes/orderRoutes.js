@@ -13,8 +13,6 @@ const router = express.Router()
 
 router.get('/', validateAccessToken, isAdmin, getAdminOrders)
 
-// TODO - get orders belonging to a particular user
-
 router.post('/', validateAccessToken, createOrder)
 
 router.post('/:id/pay', validateAccessToken, payOrder)
