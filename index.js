@@ -23,7 +23,7 @@ const app = express()
 // TODO - if product removed from product list, needs to be removed from basket and anywhere else
 
 // TODO - set up proxy
-app.use(cors({credentials: true, origin: 'http://localhost:3000'}))
+app.use(cors({credentials: true, origin: 'https://will-webshop.netlify.app/'}))
 
 app.use(express.json())
 app.use(cookieParser())
