@@ -12,7 +12,6 @@ dotenv.config()
 
 // TODO - check password supplied when logging in is not empty
 
-
 // TODO - look at stripe-sample-code project to see proxy setup
 
 // TODO - write backend in both typescript and go
