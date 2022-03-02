@@ -16,7 +16,7 @@ export const createProduct = async (req, res, next) => {
 
         const payload = req.body
 
-        payload.image = `https://will-webshop.herokuapp.com/${fileName}`
+        payload.image = `https://will-webshop-2a82k.ondigitalocean.app/${fileName}`
 
         const product = new Product(payload)
         await product.save()
