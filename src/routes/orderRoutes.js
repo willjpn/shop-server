@@ -3,7 +3,6 @@ import {isAdmin, validateAccessToken} from "../middleware/authMiddleware.js";
 import {
     createOrder,
     deleteOrder,
-    editOrder,
     getAdminOrders,
     getOrder, getUserOrders,
     payOrder
@@ -18,8 +17,6 @@ router.post('/', validateAccessToken, createOrder)
 router.post('/:id/pay', validateAccessToken, payOrder)
 
 router.get('/user-orders', validateAccessToken, getUserOrders)
-
-router.put('/:id', validateAccessToken, editOrder)
 
 router.get('/:id', validateAccessToken, getOrder)
 
