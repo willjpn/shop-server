@@ -7,8 +7,8 @@ import {CustomError} from "../../utils/errorHandler.js";
 export const getNewAccessToken = async (req, res, next) => {
     try {
 
-        if (!req.cookies.refreshToken) {
-            return next(new CustomError("No refresh token provided", 400))
+        if (!req.cookies.refreshToken || req.cookies.refreshToken === '' || typeof req.cookies.refreshToken !== 'string') {
+            return next(new CustomError("No refresh token provided.", 400));
         }
 
         const refreshToken = await Token.findOne({token: req.cookies.refreshToken})
@@ -32,7 +32,6 @@ export const getNewAccessToken = async (req, res, next) => {
         if (!user) {
             return next(new CustomError("Unable to user with specified id", 400))
         }
-
 
         res.json({
             accessToken: accessToken,

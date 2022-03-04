@@ -16,7 +16,7 @@ export const createProduct = async (req, res, next) => {
 
         const payload = req.body
 
-        payload.image = `https://will-webshop.herokuapp.com/${fileName}`
+        payload.image = `https://api.will-webshop.com/${fileName}`
 
         const product = new Product(payload)
         await product.save()
@@ -88,9 +88,7 @@ export const queryProducts = async (req, res, next) => {
     let query = req.body.query.toLowerCase().trim()
     let pageNumber = req.body.page || 1
 
-
     try {
-
         const products = await Product.find({
             name: {
                 $regex: query,

@@ -5,7 +5,6 @@ import {
     getUsers,
     updateUser,
     deleteUser,
-    fetchUserByAccessToken,
     changePassword,
     editShippingDetails,
     getUserInformation,
@@ -27,12 +26,8 @@ router.get("/get-user", validateAccessToken, getUserInformation)
 // get user information for edit user screen
 router.get('/get-edit-user/:id', validateAccessToken, isAdmin, getEditUser)
 
-// // get a user
-// router.get("/:id", getUser)
-
 // update a user
-// TODO - this should have middleware!!
-router.put("/:id", updateUser)
+router.put("/:id", validateAccessToken, isAdmin, updateUser)
 
 // delete a user
 router.delete("/:id", validateAccessToken, isAdmin, deleteUser)
@@ -48,9 +43,6 @@ router.post("/shipping-address", validateAccessToken, editShippingDetails)
 
 // edit user details
 router.post("/details", validateAccessToken, editUserDetails)
-
-// get user using access token
-router.get("/authenticate/:accessToken", fetchUserByAccessToken)
 
 // add temporary checkout shipping address for user
 router.post("/checkout-address", validateAccessToken, addCheckoutAddress)

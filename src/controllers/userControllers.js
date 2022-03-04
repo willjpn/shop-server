@@ -2,14 +2,22 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import {generateRefreshToken, generateAccessToken} from "../../utils/generateTokens.js";
 import Token from "../models/Token.js";
-import jwt from "jsonwebtoken";
 import {CustomError} from "../../utils/errorHandler.js";
 
 export const registerUser = async (req, res, next) => {
     try {
-        const payload = req.body
+        const email = req.body.email.toLowerCase()
+        const password = req.body.password
 
-        const user = await User.findOne({email: payload.email})
+        if (!email || email === '' || typeof email !== 'string') {
+            return next(new CustomError("You must supply an email address in order to login", 400));
+        }
+
+        if (!password || password === '') {
+            return next(new CustomError('You must supply a password in order to login', 400));
+        }
+
+        const user = await User.findOne({email: email})
 
         if (user) {
             return next(new CustomError("A user with this email already exists. Please use a different email.", 400))
@@ -17,7 +25,7 @@ export const registerUser = async (req, res, next) => {
 
         // password hashing gets done pre-save
 
-        const newUser = new User(payload)
+        const newUser = new User({email, password})
 
         await newUser.save()
 
@@ -92,7 +100,7 @@ export const validateUser = async (req, res, next) => {
     try {
         const user = await User.findOne({email: email})
         if (!user) {
-            return next(new CustomError("Incorrect email or password", 409))
+            return next(new CustomError("Incorrect email or password", 403))
         } else {
             const match = await bcrypt.compare(password, user.password)
             if (match) {
@@ -106,14 +114,14 @@ export const validateUser = async (req, res, next) => {
                 }
                 res.cookie("refreshToken", refreshToken, {
                     httpOnly: true,
-                    secure: 'false',
-                    sameSite: 'none'
+                    sameSite: 'strict',
+                    secure: 'true'
                 });
 
                 res.cookie("li", true, {
                     httpOnly: false,
-                    secure: 'false',
-                    sameSite: 'none'
+                    secure: 'true',
+                    sameSite: 'strict'
                 })
 
                 const userInfo = {
@@ -132,7 +140,7 @@ export const validateUser = async (req, res, next) => {
                 })
 
             } else {
-                return next(new CustomError("Incorrect email or password", 409))
+                return next(new CustomError("Incorrect email or password", 403))
             }
         }
     } catch (err) {
@@ -140,28 +148,6 @@ export const validateUser = async (req, res, next) => {
     }
 }
 
-export const getUser = async (req, res, next) => {
-    try {
-        const bearerToken = req.headers.authorization
-        let accessToken
-        if (bearerToken && bearerToken.startsWith("Bearer")) {
-            // bearer token exists and correct format
-            accessToken = bearerToken.split(" ")[1]
-            if (!accessToken) {
-                res.statusCode = 500
-                return next(new Error("Access token not found"))
-            }
-        } else {
-            res.status(506)
-            return next(new Error("Token doesn't exist or incorrect format"))
-        }
-        const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-        const user = await User.findOne({_id: decoded.id})
-        res.json(user)
-    } catch (err) {
-        next(err)
-    }
-}
 
 export const getUserInformation = async (req, res) => {
     res.json(req.user)
@@ -172,19 +158,8 @@ export const getEditUser = async (req, res, next) => {
     try {
         const user = await User.findOne({_id: id}).select("-password")
         if (!user) {
-            return next(new CustomError("Incorrect email or password", 409))
+            return next(new CustomError("Incorrect email or password", 403))
         }
-        res.json(user)
-    } catch (err) {
-        next(err)
-    }
-}
-
-export const fetchUserByAccessToken = async (req, res, next) => {
-    try {
-        const accessToken = req.params.accessToken
-        const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET)
-        const user = await User.findOne({_id: decoded.id}).select("-password")
         res.json(user)
     } catch (err) {
         next(err)
@@ -195,6 +170,18 @@ export const changePassword = async (req, res, next) => {
 
     try {
         const {originalPassword, newPassword, repeatPassword} = req.body
+
+        if (!originalPassword || originalPassword === '' || typeof originalPassword !== 'string') {
+            return next(new CustomError("You must supply your current password.", 400));
+        }
+
+        if (!newPassword || newPassword === '' || typeof newPassword !== 'string') {
+            return next(new CustomError("You must supply your new password.", 400));
+        }
+
+        if (!repeatPassword || repeatPassword === '' || typeof repeatPassword !== 'string') {
+            return next(new CustomError("You must supply your new password.", 400));
+        }
 
         // even though we have req.user, need to find user again as req.user doesn't have password
         const user = await User.findOne({_id: req.user._id})
@@ -232,8 +219,28 @@ export const changePassword = async (req, res, next) => {
 
 export const editShippingDetails = async (req, res, next) => {
     try {
+        const {address, city, postCode, county, country} = req.body
+
+        if (!address || address === '' || typeof address !== 'string') {
+            return next(new CustomError("You must supply your address.", 400));
+        }
+        if (!city || city === '' || typeof city !== 'string') {
+            return next(new CustomError("You must supply your city or town.", 400));
+        }
+        if (!postCode || postCode === '' || typeof postCode !== 'string') {
+            return next(new CustomError("You must supply your post code.", 400));
+        }
+        if (!county || county === '' || typeof county !== 'string') {
+            return next(new CustomError("You must supply your county.", 400));
+        }
+        if (!country || country === '' || typeof country !== 'string') {
+            return next(new CustomError("You must supply your country.", 400));
+        }
+
         const user = req.user
+
         await user.addShippingDetails(req.body)
+
         res.json({
             message: "success"
         })
@@ -246,17 +253,27 @@ export const editShippingDetails = async (req, res, next) => {
 export const editUserDetails = async (req, res, next) => {
     try {
         const user = req.user
-        const payload = req.body
+        const {firstName, lastName, email} = req.body
+        if (!firstName || firstName === '' || typeof firstName !== 'string') {
+            return next(new CustomError("You must supply your first name.", 400));
+        }
+        if (!lastName || lastName === '' || typeof lastName !== 'string') {
+            return next(new CustomError("You must supply your last name.", 400));
+        }
+        if (!email || email === '' || typeof email !== 'string') {
+            return next(new CustomError("You must supply your email.", 400));
+        }
 
-        user.firstName = payload.firstName
-        user.lastName = payload.lastName
-        user.email = payload.email
+        user.firstName = firstName
+        user.lastName = lastName
+        user.email = email
 
         await user.save()
 
         res.json({
             message: "success"
         })
+
     } catch (err) {
         next(err)
     }
@@ -264,15 +281,27 @@ export const editUserDetails = async (req, res, next) => {
 
 export const addCheckoutAddress = async (req, res, next) => {
     try {
-        const address = req.body
         const user = req.user
 
-        if (!address.postCode) {
-            return next(new CustomError("Address not provided.", 400))
+        const {address, city, postCode, county, country} = req.body
+
+        if (!address || address === '' || typeof address !== 'string') {
+            return next(new CustomError("You must supply your address.", 400));
+        }
+        if (!city || city === '' || typeof city !== 'string') {
+            return next(new CustomError("You must supply your city or town.", 400));
+        }
+        if (!postCode || postCode === '' || typeof postCode !== 'string') {
+            return next(new CustomError("You must supply your post code.", 400));
+        }
+        if (!county || county === '' || typeof county !== 'string') {
+            return next(new CustomError("You must supply your county.", 400));
+        }
+        if (!country || country === '' || typeof country !== 'string') {
+            return next(new CustomError("You must supply your country.", 400));
         }
 
-        user.checkoutAddress = address
-
+        user.checkoutAddress = req.body
 
         await user.save()
 
