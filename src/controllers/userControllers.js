@@ -6,11 +6,20 @@ import {CustomError} from "../../utils/errorHandler.js";
 
 export const registerUser = async (req, res, next) => {
     try {
+
+        const firstName = req.body.firstName
+        const lastName = req.body.lastName
         const email = req.body.email.toLowerCase()
         const password = req.body.password
 
         if (!email || email === '' || typeof email !== 'string') {
-            return next(new CustomError("You must supply an email address in order to login", 400));
+            return next(new CustomError("You must supply an email address in order to create an account", 400));
+        }
+        if (!firstName || firstName === '' || typeof firstName !== 'string') {
+            return next(new CustomError("You must supply a first name in order to create an account", 400));
+        }
+        if (!lastName || lastName === '' || typeof lastName !== 'string') {
+            return next(new CustomError("You must supply a last name in order to create an account", 400));
         }
 
         if (!password || password === '') {
@@ -25,7 +34,7 @@ export const registerUser = async (req, res, next) => {
 
         // password hashing gets done pre-save
 
-        const newUser = new User({email, password})
+        const newUser = new User({email, password, firstName, lastName})
 
         await newUser.save()
 
