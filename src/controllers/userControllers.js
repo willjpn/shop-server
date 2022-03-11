@@ -112,7 +112,7 @@ export const validateUser = async (req, res, next) => {
             return next(new CustomError("You must supply an email address in order to login", 400));
         }
 
-        if (!password || password === '') {
+        if (!password || password === '' || typeof password !== 'string') {
             return next(new CustomError('You must supply a password in order to login', 400));
         }
 
