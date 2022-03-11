@@ -23,7 +23,7 @@ export const registerUser = async (req, res, next) => {
         }
 
         if (!password || password === '') {
-            return next(new CustomError('You must supply a password in order to login', 400));
+            return next(new CustomError('You must supply a password in order to create an account', 400));
         }
 
         const user = await User.findOne({email: email})
@@ -105,8 +105,18 @@ export const deleteUser = async (req, res) => {
 
 
 export const validateUser = async (req, res, next) => {
-    const {email, password} = req.body
+    const email = req.body.email.toLowerCase()
+    const password = req.body.password
     try {
+
+        if (!email || email === '' || typeof email !== 'string') {
+            return next(new CustomError("You must supply an email address in order to login", 400));
+        }
+
+        if (!password || password === '') {
+            return next(new CustomError('You must supply a password in order to login', 400));
+        }
+
         const user = await User.findOne({email: email})
         if (!user) {
             return next(new CustomError("Incorrect email or password", 403))
