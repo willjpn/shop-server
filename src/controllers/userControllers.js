@@ -32,8 +32,7 @@ export const registerUser = async (req, res, next) => {
             return next(new CustomError("A user with this email already exists. Please use a different email.", 400))
         }
 
-        // password hashing gets done pre-save
-
+        // PASSWORD HASHING GETS DONE PRE-SAVE
         const newUser = new User({email, password, firstName, lastName})
 
         await newUser.save()
@@ -224,7 +223,7 @@ export const changePassword = async (req, res, next) => {
 
         user.password = newPassword
 
-        // password gets hashed pre-save
+        // PASSWORD GETS HASHED PRE-SAVE
         await user.save()
 
         res.json({
